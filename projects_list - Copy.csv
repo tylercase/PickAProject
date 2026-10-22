@@ -1,0 +1,9 @@
+project_name,difficulty,language,type
+Space Invaders,easy,Python,game
+N-Body simulation,medium,Python,physics
+Pong Game,easy,Python,game
+Double Pendulum simulation,medium,Python,physics
+Paper Toss,medium,Unity,game
+Fluid simulation,hard,Python,physics
+Minesweeper,medium,Python,game
+Wave Intereference simulation,medium,Python,physics
