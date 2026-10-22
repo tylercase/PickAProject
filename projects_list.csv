@@ -6,4 +6,7 @@ Double Pendulum simulation,medium,Python,physics
 Paper Toss,medium,Unity,game
 Fluid simulation,hard,Python,physics
 Minesweeper,medium,Python,game
-Wave Intereference simulation,medium,Python,physics
+Wave Interference simulation,medium,Python,physics
+Wind Tunnel simulation,hard,Python,physics
+Ideal Gas Law simulation,easy,Python,physics
+Single Pendulum simulation,easy,Python,physics
