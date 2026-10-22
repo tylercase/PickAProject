@@ -9,6 +9,7 @@ class PickAProject:
         self.project_type = project_type.lower()
         self.difficulty = difficulty.lower()
         self.projects_df: pd.DataFrame = pd.read_csv(projects_path)
+        self.columns = self.projects_df.columns
 
         self.filter_projects()
 
@@ -45,7 +46,7 @@ class PickAProject:
             return
 
         # Construct dataframe and concatinate with full df
-        df_add = pd.DataFrame(lst, columns=self.projects_df.columns)
+        df_add = pd.DataFrame(lst, columns=self.columns)
         self.projects_df = pd.concat([self.projects_df, df_add], ignore_index=True)
 
         # Update csv and filtered search
@@ -63,7 +64,7 @@ class PickAProject:
         
         new_row = [[project_name, difficulty, language, type]]
         # Construct dataframe and concatinate
-        df_add = pd.DataFrame(new_row, columns=self.projects_df.columns)
+        df_add = pd.DataFrame(new_row, columns=self.columns)
         self.projects_df = pd.concat([self.projects_df, df_add], ignore_index=True)
 
         # Update csv and filter
@@ -87,9 +88,25 @@ class PickAProject:
             print(self.projects_filtered)
 
     def search_projects(self, project_type:str = "", difficulty:str = "", language:str = ""):
+        # Updates filters for projects
         if project_type.lower() != self.project_type.lower():
             self.project_type = project_type.lower()
         if difficulty.lower() != self.difficulty.lower():
             self.difficulty = difficulty.lower()
         self.filter_projects()
         self.view_projects(all = False)
+
+    def edit_project(self, project_name:str, column_to_edit:str, new_value:str):
+        # Make changes to a project in the database, change language, difficulty, type
+
+        # Check that project name exists
+        if not self.project_exists(project_name):
+            print("Project with name '" + project_name + "' does not exist in database.")
+            return
+
+        # Check that requested column exists
+        if column_to_edit.lower() not in self.columns.str.lower():
+            print("column '" + column_to_edit + "' does not exist.")
+            return
+        
+        self.projects_df.loc[self.projects_df["project_name"].str.lower() == project_name.lower(), column_to_edit] = new_value
