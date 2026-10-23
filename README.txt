@@ -35,4 +35,13 @@ Syntax:
         ## This method spits out a view of the projects database.
         ## by default all = True, showing all projects in the database. Set this to False to only show filtered projects
 
-    
+    project.edit_project(project_name:str, column:str, new_value:str)
+        ## This method allows you to change any feature of a project
+
+    project.pick_project(filtered:bool = True)
+        ## This will randomly select a project based on the filtered entered at the initialization or during search_projects()
+        ## Change feature to false to have it randomly select from ALL projects in database
+
+    project.complete_project(project_name:str)
+        ## This is the method to remove projects from the database. It will congratulate you for finishing it.
+        

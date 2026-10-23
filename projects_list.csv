@@ -1,12 +1,12 @@
 project_name,difficulty,language,type
-Space Invaders,easy,Python,game
-N-Body simulation,medium,Python,physics
-Pong Game,easy,Python,game
-Double Pendulum simulation,medium,Python,physics
-Paper Toss,medium,Unity,game
-Fluid simulation,hard,Python,physics
-Minesweeper,medium,Python,game
-Wave Interference simulation,medium,Python,physics
-Wind Tunnel simulation,hard,Python,physics
 Ideal Gas Law simulation,easy,Python,physics
+Minesweeper,easy,Python,game
+Pong Game,easy,Python,game
 Single Pendulum simulation,easy,Python,physics
+Space Invaders,easy,Python,game
+Wave Interference simulation,easy,Python,physics
+Fluid simulation,hard,Python,physics
+Double Pendulum simulation,medium,Python,physics
+N-Body simulation,medium,Python,physics
+Wind Tunnel simulation,hard,Unity,physics
+Paper Toss,medium,Unity,game

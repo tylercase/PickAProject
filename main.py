@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import random 
 # r"C:\Users\Tyler\Desktop\Tyler\Coding Projects\PickAProject\projects_list.csv" Lab Desktop
 # r"C:\Users\Tyler\Documents\Tyler\Coding Projects\PickAProject\projects_list.csv" Laptop
 class PickAProject:
@@ -9,7 +10,7 @@ class PickAProject:
         self.project_type = project_type.lower()
         self.difficulty = difficulty.lower()
         self.projects_df: pd.DataFrame = pd.read_csv(projects_path)
-        self.columns = self.projects_df.columns
+        self.columns = {c.lower(): c for c in self.projects_df.columns} # {lower: Original}
 
         self.filter_projects()
 
@@ -46,13 +47,24 @@ class PickAProject:
             return
 
         # Construct dataframe and concatinate with full df
-        df_add = pd.DataFrame(lst, columns=self.columns)
+        df_add = pd.DataFrame(lst, columns=self.projects_df.columns)
         self.projects_df = pd.concat([self.projects_df, df_add], ignore_index=True)
 
         # Update csv and filtered search
-        self.projects_df.to_csv(self.projects_path, index=False)
+        self.print_csv()
         self.filter_projects()
         print(self.projects_df)
+
+    def print_csv(self):
+        self.projects_df.to_csv(self.projects_path, index=False)
+
+    def find_column(self, column:str):
+        # Checks columns dictionary for matches, returns the correct name for column
+        lw = column.strip().lower()
+        if lw not in self.columns:
+            print("Column titled '" + column + "' does not exist.")
+            return
+        return self.columns[lw]
 
     def add_project(self, project_name: str, difficulty: str, language: str, type: str):
         # Adds only 1 project to the database
@@ -64,17 +76,17 @@ class PickAProject:
         
         new_row = [[project_name, difficulty, language, type]]
         # Construct dataframe and concatinate
-        df_add = pd.DataFrame(new_row, columns=self.columns)
+        df_add = pd.DataFrame(new_row, columns=self.projects_df.columns)
         self.projects_df = pd.concat([self.projects_df, df_add], ignore_index=True)
 
         # Update csv and filter
-        self.projects_df.to_csv(self.projects_path, index=False)
+        self.print_csv()
         self.filter_projects()
         print(self.projects_df)
 
     def project_exists(self, project_name: str):
         # Checks database for matching project names, returns true if it already exists
-        names_lst = [i.lower() for i in self.projects_df["project_name"] if i.lower() == project_name.lower()]
+        names_lst = [i.lower() for i in self.projects_df["project_name"] if i.strip().lower() == project_name.strip().lower()]
         return len(names_lst) != 0
 
 
@@ -96,17 +108,54 @@ class PickAProject:
         self.filter_projects()
         self.view_projects(all = False)
 
-    def edit_project(self, project_name:str, column_to_edit:str, new_value:str):
+    def sort_projects(self, column:str):
+        col = self.find_column(column)
+        if col == None: return
+        
+        self.projects_df = self.projects_df.sort_values(col).reset_index(drop=True)
+        self.filter_projects()
+        self.view_projects()
+
+    def edit_project(self, project_name:str, column:str, new_value:str):
         # Make changes to a project in the database, change language, difficulty, type
 
+        
         # Check that project name exists
         if not self.project_exists(project_name):
             print("Project with name '" + project_name + "' does not exist in database.")
             return
 
         # Check that requested column exists
-        if column_to_edit.lower() not in self.columns.str.lower():
-            print("column '" + column_to_edit + "' does not exist.")
-            return
+        col = self.find_column(column)
+        if col == None: return
+
+        mask = self.projects_df["project_name"].str.lower() == project_name.lower()
         
-        self.projects_df.loc[self.projects_df["project_name"].str.lower() == project_name.lower(), column_to_edit] = new_value
+        self.projects_df.loc[mask, col] = new_value
+        self.print_csv()
+        self.filter_projects()
+        print(self.projects_df.loc[mask])
+
+    def pick_project(self, filtered:bool = True):
+        if filtered:
+            num_projects = len(self.projects_filtered)
+            rand_idx = random.randint(0, num_projects-1)
+            chosen_project = self.projects_filtered.iloc[rand_idx]
+
+        else:
+            num_projects = len(self.projects_df)
+            rand_idx = random.randint(0, num_projects-1)
+            chosen_project = self.projects_df.iloc[rand_idx]
+
+        print("Your chosen project is '" + chosen_project['project_name'] + "'! \n Good Luck!")
+
+    def complete_project(self, project_name:str):
+        # This is the method to remove a project from the database
+        if not self.project_exists(project_name):
+            print("Project with name '" + project_name + "' does not exist.")
+            return
+
+        self.projects_df = self.projects_df.drop(self.projects_df[self.projects_df["project_name"].str.lower() == project_name.lower()].index)
+        self.print_csv()
+        self.filter_projects()
+        print("Congratulations for finishing the '" + project_name + "' project! \n You deserve a beer!")
