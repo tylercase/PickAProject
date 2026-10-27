@@ -5,14 +5,37 @@ import random
 # r"C:\Users\Tyler\Documents\Tyler\Coding Projects\PickAProject\projects_list.csv" Laptop
 class PickAProject:
     type str_list = list[str]
-    def __init__(self, project_type:str = "", difficulty:str = "", projects_path = r"C:\Users\Tyler\Desktop\Tyler\Coding Projects\PickAProject\projects_list.csv"):
+    def __init__(self, project_type:str = "", difficulty:str = "", projects_path = r"user_data\projects_list.csv"):
         self.projects_path = projects_path
         self.project_type = project_type.lower()
         self.difficulty = difficulty.lower()
-        self.projects_df: pd.DataFrame = pd.read_csv(projects_path)
+        self.projects_df: pd.DataFrame = pd.read_csv(projects_path).fillna("")
         self.columns = {c.lower(): c for c in self.projects_df.columns} # {lower: Original}
 
         self.filter_projects()
+
+    def get_df(self, filtered:bool = True):
+        if filtered:
+            return self.projects_filtered
+        else:
+            return self.projects_df 
+
+    def gui_filter_search(self, column, value):
+        if not value or not column:
+            self.projects_filtered = self.projects_df
+            return
+
+        if column == "type":
+            self.project_type = value
+
+        if column == "difficulty":
+            self.difficulty = value
+
+        df_filtered = self.projects_df[self.projects_df[column] == value]
+        self.projects_filtered = df_filtered
+
+    def reset_filter(self):
+        self.projects_filtered = self.projects_df
 
     def filter_projects(self):
         # This method updates the filtered df
@@ -148,6 +171,7 @@ class PickAProject:
             chosen_project = self.projects_df.iloc[rand_idx]
 
         print("Your chosen project is '" + chosen_project['project_name'] + "'! \n Good Luck!")
+        return chosen_project['project_name']
 
     def complete_project(self, project_name:str):
         # This is the method to remove a project from the database
