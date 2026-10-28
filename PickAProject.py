@@ -5,10 +5,11 @@ import random
 # r"C:\Users\Tyler\Documents\Tyler\Coding Projects\PickAProject\projects_list.csv" Laptop
 class PickAProject:
     type str_list = list[str]
-    def __init__(self, project_type:str = "", difficulty:str = "", projects_path = r"user_data\projects_list.csv"):
+    def __init__(self, project_type:str = "", difficulty:str = "", language:str = "", projects_path = r"user_data\projects_list.csv"):
         self.projects_path = projects_path
         self.project_type = project_type.lower()
         self.difficulty = difficulty.lower()
+        self.language = language.lower()
         self.projects_df: pd.DataFrame = pd.read_csv(projects_path).fillna("")
         self.columns = {c.lower(): c for c in self.projects_df.columns} # {lower: Original}
 
@@ -26,13 +27,13 @@ class PickAProject:
             return
 
         if column == "type":
-            self.project_type = value
+            self.search_projects(project_type=value)
 
-        if column == "difficulty":
-            self.difficulty = value
+        elif column == "difficulty":
+            self.search_projects(difficulty=value)
 
-        df_filtered = self.projects_df[self.projects_df[column] == value]
-        self.projects_filtered = df_filtered
+        elif column == "language":
+            self.search_projects(language=value)
 
     def reset_filter(self):
         self.projects_filtered = self.projects_df
@@ -45,7 +46,9 @@ class PickAProject:
         
         if self.difficulty != "":
             self.projects_filtered = self.projects_filtered[self.projects_filtered["difficulty"].str.lower() == self.difficulty]
-        
+
+        if self.language != "":
+            self.projects_filtered = self.projects_filtered[self.projects_filtered["language"].str.lower() == self.language]
 
     def add_projects(self, project_name: str_list, difficulty: str_list, language: str_list, type: str_list):
         # Adds multiple projects with inputs in the form of list[str]
@@ -128,6 +131,9 @@ class PickAProject:
             self.project_type = project_type.lower()
         if difficulty.lower() != self.difficulty.lower():
             self.difficulty = difficulty.lower()
+        if language.lower() != self.language.lower():
+            self.language = language.lower()
+
         self.filter_projects()
         self.view_projects(all = False)
 
@@ -141,7 +147,6 @@ class PickAProject:
 
     def edit_project(self, project_name:str, column:str, new_value:str):
         # Make changes to a project in the database, change language, difficulty, type
-
         
         # Check that project name exists
         if not self.project_exists(project_name):

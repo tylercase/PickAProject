@@ -69,6 +69,7 @@ class ProjectsDisplay(ttk.Frame):
 
         self.edit_entry = ttk.Entry(self.edit_frame)
         self.edit_entry.grid(row=0, column=0, padx=2, pady=5, sticky="e")
+        self.edit_entry.bind("<Return>", self.edit_selection)
 
         edit_button = ttk.Button(self.edit_frame, text="Edit Value", command=self.edit_selection)
         edit_button.grid(row=0, column=1, padx=2, pady=5, sticky="w")
@@ -152,10 +153,11 @@ class ProjectsDisplay(ttk.Frame):
         df = self.pp.get_df(filtered=False)
         return sorted(i for i in list(set(df[col].tolist())))
 
-    def edit_selection(self):
+    def edit_selection(self, event: tk.Event):
         row, col = self.get_selection()
-        print(self.project_names[row])
+        # print(self.project_names[row])
         self.pp.edit_project(project_name=self.project_names[row], column=self.columns[col], new_value=self.edit_entry.get())
+        self.edit_entry.delete(0, tk.END)
         self.update()
         
     def get_selection(self):    # returns tuple: (row,col)
@@ -170,7 +172,7 @@ class ProjectsDisplay(ttk.Frame):
         self.update()
 
     def update(self):
-        self.df = self.pp.get_df()
+        self.df = self.pp.get_df(filtered=True)
         self.project_names = self.get_project_names()   # dict {index, name}
         self.columns = self.df.columns.tolist()
         self.fill_lists()
